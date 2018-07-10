@@ -17,7 +17,7 @@
 
         <EditText
             android:id="@+id/item_edit_text"
-            android:hint="Enter Item"
+            android:hint="Enter Task"
             android:layout_width="0dp"
             android:layout_weight="4"
             android:layout_height="wrap_content"/>
