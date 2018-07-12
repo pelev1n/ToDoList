@@ -1,90 +1,51 @@
 package com.andrewxa.todolist;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.andrewxa.todolist.model.Task;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class TaskAdapter extends ArrayAdapter<Task> {
+public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
+
     private LayoutInflater inflater;
-    private int layout;
-    private ArrayList<Task> taskList;
+    private List<Task> tasks;
 
-    TaskAdapter(Context context, int resource, ArrayList<Task> tasks) {
-        super(context, resource, tasks);
-        this.taskList = tasks;
-        this.layout = resource;
+    TaskAdapter(Context context, List<Task> tasks) {
+        this.tasks = tasks;
         this.inflater = LayoutInflater.from(context);
     }
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    @Override
+    public TaskAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        final ViewHolder viewHolder;
-        if(convertView==null){
-            convertView = inflater.inflate(this.layout, parent, false);
-            viewHolder = new ViewHolder(convertView);
-            convertView.setTag(viewHolder);
-        }
-        else{
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-
-        final Task task = taskList.get(position);
-
-        viewHolder.nameView.setText(task.getName());
-
-        viewHolder.editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewHolder.editText.setVisibility(View.VISIBLE);
-                viewHolder.editText.requestFocus();
-                viewHolder.nameView.setVisibility(View.GONE);
-                final String oldTask = viewHolder.nameView.getText().toString();
-
-                viewHolder.editButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        viewHolder.nameView.setVisibility(View.VISIBLE);
-                        /*                        String newTask = viewHolder.editText.getText().toString();*/
-                        viewHolder.nameView.setText(viewHolder.editText.getText().toString());
-
-                        for( Task task : taskList) {
-                            if(task.getName() == oldTask)
-                                task.setName(viewHolder.editText.getText().toString());
-                        }
-                        notifyDataSetChanged();
-                        viewHolder.editText.setVisibility(View.GONE);
-                    }
-                });
-
-            }
-        });
-
-
-        viewHolder.removeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                taskList.remove(position);
-                notifyDataSetChanged();
-            }
-        });
-
-        return convertView;
+        View view = inflater.inflate(R.layout.list_item, parent, false);
+        return new ViewHolder(view);
     }
 
-    private class ViewHolder {
+    @Override
+    public void onBindViewHolder(TaskAdapter.ViewHolder holder, int position) {
+        Task task = tasks.get(position);
+        holder.nameView.setText(task.getName());
+    }
+
+    @Override
+    public int getItemCount() {
+        return tasks.size();
+    }
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private Button editButton, removeButton;
         private TextView nameView;
         private EditText editText;
 
         ViewHolder(View view){
+            super(view);
             editButton = (Button) view.findViewById(R.id.editButton);
             removeButton = (Button) view.findViewById(R.id.removeButton);
             nameView = (TextView) view.findViewById(R.id.nameView);
@@ -92,3 +53,5 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         }
     }
 }
+
+
