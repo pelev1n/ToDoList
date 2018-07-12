@@ -12,12 +12,13 @@ import android.widget.ListView;
 import com.andrewxa.todolist.model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private EditText itemET;
     private Button btn;
-    ArrayList<Task> tasks = new ArrayList();
+    List<Task> tasks = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +28,13 @@ public class MainActivity extends AppCompatActivity {
         itemET = findViewById(R.id.item_edit_text);
         btn = findViewById(R.id.add_btn);
 
-        RecyclerView taskList = (RecyclerView) findViewById(R.id.list);
+        tasks.add(new Task("Read Book"));
+        tasks.add(new Task("Swim"));
+        tasks.add(new Task("Test 3"));
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.list);
         final TaskAdapter adapter = new TaskAdapter(this, tasks);
-        taskList.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);
 
 
         btn.setOnClickListener(new View.OnClickListener() {
@@ -38,10 +43,8 @@ public class MainActivity extends AppCompatActivity {
                 switch (v.getId()) {
                     case R.id.add_btn:
                         String itemEntered = itemET.getText().toString();
-                        /*adapter.add(new Task(itemEntered));*/
-                        tasks.add(new Task(itemEntered));
+                        adapter.addTask(new Task(itemEntered));
                         itemET.setText("");
-                        adapter.notifyDataSetChanged();
                         break;
                 }
             }
