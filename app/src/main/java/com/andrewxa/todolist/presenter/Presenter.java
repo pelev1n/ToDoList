@@ -32,7 +32,8 @@ public class Presenter implements Contract.IPresenter {
     @Override
     public void initial() {
        Cursor cursor = sqliteController.getAllTasks();
-       mView.succesAddedTask(cursor);
+        mView.updateData(onGetAllTaskClicked());
+      /* mView.succesAddedTask(cursor);*/
     }
 
     @Override
@@ -40,7 +41,8 @@ public class Presenter implements Contract.IPresenter {
         Task task = new Task(taskName);
         boolean isAdded = sqliteController.addTask(task);
         if(isAdded) {
-            mView.succesAddedTask(sqliteController.getAllTasks());
+            /*mView.succesAddedTask(sqliteController.getAllTasks());*/
+            mView.updateData(onGetAllTaskClicked());
             mView.message("Task has been added");
         }
         else
@@ -51,8 +53,10 @@ public class Presenter implements Contract.IPresenter {
     public void onEditTaskButtonClicked(String newTaskName,long id) {
         Task task = new Task(newTaskName);
         boolean isEdited = sqliteController.editTask(task,id);
-        if(isEdited)
+        if(isEdited) {
+            mView.updateData(onGetAllTaskClicked());
             mView.message("Task has been edited!");
+        }
         else
             mView.message("Failed to edit task");
 
@@ -61,8 +65,10 @@ public class Presenter implements Contract.IPresenter {
     @Override
     public void onDeleteTaskButtonClicked(long id) {
         boolean isDeleted  = sqliteController.deleteTask(id);
-        if(isDeleted)
+        if(isDeleted) {
+            mView.updateData(onGetAllTaskClicked());
             mView.message("Task has been deleted");
+        }
         else
             Toast.makeText(mContext,"Failed to delete task",Toast.LENGTH_SHORT).show();
     }

@@ -29,8 +29,9 @@ public interface Contract {
 
     interface IView {
 
-        void succesAddedTask(Cursor cursor);
+       /* void succesAddedTask(Cursor cursor);*/
         void message(String msg);
+        void updateData(Cursor cursor);
     }
 
 }

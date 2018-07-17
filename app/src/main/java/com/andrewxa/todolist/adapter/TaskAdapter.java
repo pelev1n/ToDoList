@@ -89,6 +89,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         return cursor.getCount();
     }
 
+    public void update(Cursor cursor) {
+        swapCursor(cursor);
+    }
+
+
     public void swapCursor(Cursor newCursor) {
         if(cursor != null) {
             cursor.close();

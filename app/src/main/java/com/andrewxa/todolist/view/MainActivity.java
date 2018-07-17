@@ -35,8 +35,13 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
         itemET = findViewById(R.id.item_edit_text);
         btn = findViewById(R.id.add_btn);
 
+
         final Presenter presenter = new Presenter(this,this);
-        presenter.initial();
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new TaskAdapter(this,presenter.onGetAllTaskClicked());
+        recyclerView.setAdapter(mAdapter);
+
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,14 +52,9 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
         });
     }
 
-    @Override
-    public void succesAddedTask(Cursor cursor) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new TaskAdapter(this,cursor);
-        recyclerView.setAdapter(mAdapter);
-    }
-
-
+  public void updateData(Cursor cursor) {
+      mAdapter.update(cursor);
+  }
     @Override
     public void message(String msg) {
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
