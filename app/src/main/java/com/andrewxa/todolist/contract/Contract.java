@@ -1,10 +1,9 @@
 package com.andrewxa.todolist.contract;
 
-import android.database.Cursor;
 
 import com.andrewxa.todolist.data.model.Task;
 
-import java.util.HashMap;
+import java.util.List;
 
 public interface Contract {
 
@@ -20,20 +19,14 @@ public interface Contract {
      interface IPresenter {
 
         void onAddTaskButtonClicked(String taskName);
-         void onEditTaskButtonClicked(String newTaskName, long id);
-
-         void onDeleteTaskButtonClicked(long id);
-
-         HashMap<Long, Task> onGetAllTaskClicked();
-
-         void initial();
+        void onEditTaskButtonClicked(String newTaskName, long id);
+        void onDeleteTaskButtonClicked(long id);
+        List<Task> getAllTaskClicked();
      }
 
     interface IView {
-
-       /* void succesAddedTask(Cursor cursor);*/
         void message(String msg);
-        void updateData(Cursor cursor);
+        void updateData(List<Task> tasks);
     }
 
 }

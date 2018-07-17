@@ -16,7 +16,10 @@ import android.widget.Toast;
 import com.andrewxa.todolist.R;
 import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.adapter.TaskAdapter;
+import com.andrewxa.todolist.data.model.Task;
 import com.andrewxa.todolist.presenter.Presenter;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Contract.IView{
 
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
         final Presenter presenter = new Presenter(this,this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new TaskAdapter(this,presenter.onGetAllTaskClicked());
+        mAdapter = new TaskAdapter(this,presenter.getAllTaskClicked());
         recyclerView.setAdapter(mAdapter);
 
 
@@ -52,8 +55,8 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
     }
 
 
-    public void updateData(Cursor cursor) {
-        mAdapter.update(cursor);
+    public void updateData(List<Task> tasks) {
+        mAdapter.update(tasks);
     }
 
     @Override

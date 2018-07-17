@@ -25,13 +25,11 @@ import java.util.Map;
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
     private Context context;
-    /*private Cursor cursor;*/
-    HashMap<Long,Task> tasks;
+    private List<Task> tasks;
     private Presenter presenter;
 
-    public TaskAdapter(Context context, HashMap<Long,Task> tasks) {
+    public TaskAdapter(Context context, List<Task> tasks) {
         this.context = context;
-        /*this.cursor = cursor;*/
         this.tasks = tasks;
         presenter = new Presenter((Contract.IView) context,context);
 
@@ -46,16 +44,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-/*        if(!cursor.moveToPosition(position)) {
-            return;
-        }*/
-
-        /*String name = cursor.getString(cursor.getColumnIndex(SqliteTable.COLUMN_NAME));
-        String name = tasks.
-        final long id = cursor.getLong(cursor.getColumnIndex(SqliteTable.COLUMN_ID));*/
-
-        holder.nameView.setText(tasks.get(position).getName());
-        long id = tasks.get(tasks.get(position).getName())
+        Task task = tasks.get(position);
+        holder.nameView.setText(task.getName());
+        final long id = task.getId();
 
         holder.editButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,8 +64,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
                         holder.nameView.setText(holder.editText.getText().toString());
 
                         presenter.onEditTaskButtonClicked(holder.editText.getText().toString(),id);
-                        swapCursor(presenter.onGetAllTaskClicked());
-
                         holder.editText.setVisibility(View.GONE);
                     }
                 });
@@ -87,32 +76,19 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
             @Override
             public void onClick(View v) {
                 presenter.onDeleteTaskButtonClicked(id);
-                swapCursor(presenter.onGetAllTaskClicked());
             }
         });
+    }
+
+    public void update(List<Task> newTasks) {
+        this.tasks = newTasks;
+        notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
         return tasks.size();
     }
-
-    public void update(Cursor cursor) {
-        /*swapCursor(cursor);*/
-        notifyDataSetChanged();
-    }
-
-
-/*    public void swapCursor(Cursor newCursor) {
-        if(cursor != null) {
-            cursor.close();
-        }
-        cursor = newCursor;
-
-        if(newCursor != null) {
-            notifyDataSetChanged();
-        }
-    }*/
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private Button editButton, removeButton;

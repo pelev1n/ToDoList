@@ -8,10 +8,9 @@ import android.widget.Toast;
 import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.data.model.Task;
 import com.andrewxa.todolist.data.sqlite.SqliteController;
-import com.andrewxa.todolist.data.sqlite.SqliteTable;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Presenter implements Contract.IPresenter {
 
@@ -28,21 +27,12 @@ public class Presenter implements Contract.IPresenter {
         mContext = context;
         sqliteController = new SqliteController(context);
     }
-
-    @Override
-    public void initial() {
-       Cursor cursor = sqliteController.getAllTasks();
-        mView.updateData(onGetAllTaskClicked());
-      /* mView.succesAddedTask(cursor);*/
-    }
-
     @Override
     public void onAddTaskButtonClicked(String taskName) {
-        Task task = new Task(taskName);
+        Task task = new Task(0,taskName);
         boolean isAdded = sqliteController.addTask(task);
         if(isAdded) {
-            /*mView.succesAddedTask(sqliteController.getAllTasks());*/
-            mView.updateData(onGetAllTaskClicked());
+            mView.updateData(getAllTaskClicked());
             mView.message("Task has been added");
         }
         else
@@ -51,10 +41,10 @@ public class Presenter implements Contract.IPresenter {
 
     @Override
     public void onEditTaskButtonClicked(String newTaskName,long id) {
-        Task task = new Task(newTaskName);
+        Task task = new Task(id,newTaskName);
         boolean isEdited = sqliteController.editTask(task,id);
         if(isEdited) {
-            mView.updateData(onGetAllTaskClicked());
+            mView.updateData(getAllTaskClicked());
             mView.message("Task has been edited!");
         }
         else
@@ -66,7 +56,7 @@ public class Presenter implements Contract.IPresenter {
     public void onDeleteTaskButtonClicked(long id) {
         boolean isDeleted  = sqliteController.deleteTask(id);
         if(isDeleted) {
-            mView.updateData(onGetAllTaskClicked());
+            mView.updateData(getAllTaskClicked());
             mView.message("Task has been deleted");
         }
         else
@@ -74,20 +64,7 @@ public class Presenter implements Contract.IPresenter {
     }
 
     @Override
-    public HashMap<Long, Task> onGetAllTaskClicked() {
-        Cursor cursor = sqliteController.getAllTasks();
-        cursor.moveToFirst();
-
-        LinkedHashMap<Long,Task> tasks = new LinkedHashMap<>();
-       /* List<Task> tasks = new ArrayList<>();*/
-
-        while (!cursor.isAfterLast()) {
-            /*tasks.add(new Task(cursor.getString(cursor.getColumnIndex(SqliteTable.COLUMN_NAME))));*/
-            tasks.put(cursor.getLong(cursor.getColumnIndex(SqliteTable.COLUMN_ID)),
-                    new Task(cursor.getString(cursor.getColumnIndex(SqliteTable.COLUMN_NAME))));
-            cursor.moveToNext();
-        }
-        cursor.close();
-        return tasks;
+    public List<Task> getAllTaskClicked() {
+        return sqliteController.getAllTasks();
     }
 }

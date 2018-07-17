@@ -9,6 +9,9 @@ import android.util.Log;
 
 import com.andrewxa.todolist.data.model.Task;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SqliteHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "taskstore.db"; // название бд
@@ -50,9 +53,11 @@ public class SqliteHelper extends SQLiteOpenHelper {
         return db.update(table, values, SqliteTable.COLUMN_ID + " = " + id,null) > 0;
     }
 
-    public Cursor getAllTasks() {
+    public List<Task> getAllTasks() {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.query(
+        ArrayList<Task> tasks = new ArrayList<>();
+
+        Cursor cursor =  db.query(
                 SqliteTable.TABLE_USER,
                 null,
                 null,
@@ -61,6 +66,16 @@ public class SqliteHelper extends SQLiteOpenHelper {
                 null,
                 SqliteTable.COLUMN_ID + " DESC"
         );
+
+        if (cursor.moveToFirst()) {
+            do {
+                long id = cursor.getLong(cursor.getColumnIndex(SqliteTable.COLUMN_ID));
+                String name = cursor.getString(cursor.getColumnIndex(SqliteTable.COLUMN_NAME));
+                Task task = new Task(id, name);
+                tasks.add(task);
+            } while (cursor.moveToNext());
+        }
+        return tasks;
     }
 
     public boolean deleteTask(long id){

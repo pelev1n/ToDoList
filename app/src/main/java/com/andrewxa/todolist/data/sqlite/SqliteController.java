@@ -7,6 +7,9 @@ import android.database.Cursor;
 import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.data.model.Task;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SqliteController implements Contract.IModel {
 
 
@@ -38,7 +41,7 @@ public class SqliteController implements Contract.IModel {
         return sqliteHelper.deleteTask(id);
     }
 
-    public Cursor getAllTasks() {
+    public List<Task> getAllTasks() {
         return sqliteHelper.getAllTasks();
     }
 }
