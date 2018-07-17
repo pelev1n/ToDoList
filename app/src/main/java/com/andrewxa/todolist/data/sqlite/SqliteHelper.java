@@ -24,11 +24,6 @@ public class SqliteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SqliteTable.DB_USER);
-
-/*        db.execSQL("CREATE TABLE tasks (" + COLUMN_ID
-                + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_NAME
-                + " TEXT NOT NULL " + ");");*/
-
     }
 
     @Override
@@ -50,21 +45,10 @@ public class SqliteHelper extends SQLiteOpenHelper {
         }
     }
 
-/*    *//**
-     * This method edit the user details and it return int value.
-     * @param table this param provide table that you want to update.
-     * @param values values param provide col value.
-     * @param email to identify the you use want to edit.
-     * @return int value.
-     **//*
-    public int updateData(String table, ContentValues values,
-                          String email){
+    public boolean updateData(String table, ContentValues values, long id){
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.update(table, values,
-                SqliteTable.COL_USER_EMAIL + " =? ",
-                new String[]{email});
-    }*/
-
+        return db.update(table, values, SqliteTable.COLUMN_ID + " = " + id,null) > 0;
+    }
 
     public Cursor getAllTasks() {
         SQLiteDatabase db = this.getWritableDatabase();

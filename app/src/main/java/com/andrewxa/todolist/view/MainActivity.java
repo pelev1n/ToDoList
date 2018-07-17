@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.andrewxa.todolist.R;
 import com.andrewxa.todolist.contract.Contract;
@@ -30,13 +31,12 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
         setContentView(R.layout.activity_main);
 
         recyclerView = (RecyclerView) findViewById(R.id.list);
-      /*  recyclerView.setLayoutManager(new LinearLayoutManager(this));*/
 
         itemET = findViewById(R.id.item_edit_text);
         btn = findViewById(R.id.add_btn);
 
         final Presenter presenter = new Presenter(this,this);
-
+        presenter.initial();
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,8 +54,9 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
         recyclerView.setAdapter(mAdapter);
     }
 
-    @Override
-    public void unsuccesAddedTask() {
 
+    @Override
+    public void message(String msg) {
+        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
     }
 }

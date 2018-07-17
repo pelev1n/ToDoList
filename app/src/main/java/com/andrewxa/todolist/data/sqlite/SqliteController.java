@@ -24,12 +24,13 @@ public class SqliteController implements Contract.IModel {
         ContentValues values = new ContentValues();
         values.put(SqliteTable.COLUMN_NAME,task.getName());
         return sqliteHelper.insertData(SqliteTable.TABLE_USER,values);
-        /*mAdapter.swapCursor(getAllItems());*/
     }
 
     @Override
-    public boolean editTask(Task task) {
-       return addTask(task);
+    public boolean editTask(Task task, long id) {
+        ContentValues values = new ContentValues();
+        values.put(SqliteTable.COLUMN_NAME,task.getName());
+        return sqliteHelper.updateData(SqliteTable.TABLE_USER,values,id);
     }
 
     @Override

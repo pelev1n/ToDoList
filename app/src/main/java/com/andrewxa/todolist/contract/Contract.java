@@ -10,7 +10,7 @@ public interface Contract {
 
         boolean addTask(Task task);
 
-        boolean editTask(Task task);
+        boolean editTask(Task task, long id);
 
         boolean deleteTask(long id);
     }
@@ -18,17 +18,19 @@ public interface Contract {
      interface IPresenter {
 
         void onAddTaskButtonClicked(String taskName);
-        void onEditTaskButtonClicked(String taskName);
-        void onDeleteTaskButtonClicked(long id);
+         void onEditTaskButtonClicked(String newTaskName, long id);
+
+         void onDeleteTaskButtonClicked(long id);
 
          Cursor onGetAllTaskClicked();
+
+         void initial();
      }
 
     interface IView {
 
         void succesAddedTask(Cursor cursor);
-
-        void unsuccesAddedTask();
+        void message(String msg);
     }
 
 }

@@ -20,7 +20,6 @@ import com.andrewxa.todolist.presenter.Presenter;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
-    SQLiteDatabase mDatabase;
     private Context context;
     private Cursor cursor;
     private Presenter presenter;
@@ -44,6 +43,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         if(!cursor.moveToPosition(position)) {
             return;
         }
+
         String name = cursor.getString(cursor.getColumnIndex(SqliteTable.COLUMN_NAME));
         final long id = cursor.getLong(cursor.getColumnIndex(SqliteTable.COLUMN_ID));
 
@@ -56,7 +56,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
                 holder.editText.setVisibility(View.VISIBLE);
                 holder.editText.requestFocus();
                 holder.nameView.setVisibility(View.GONE);
-
                 holder.editButton.setOnClickListener(new View.OnClickListener() {
 
                     @Override
@@ -65,16 +64,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
                         holder.nameView.setVisibility(View.VISIBLE);
                         holder.nameView.setText(holder.editText.getText().toString());
 
-                        presenter.onEditTaskButtonClicked(holder.editText.getText().toString());
+                        presenter.onEditTaskButtonClicked(holder.editText.getText().toString(),id);
+                        swapCursor(presenter.onGetAllTaskClicked());
 
-                        /*ContentValues cv = new ContentValues();
-                        cv.put(TaskDbHelper.COLUMN_NAME,holder.editText.getText().toString());
-                        TaskDbHelper taskDbHelper = new TaskDbHelper(context);
-                        mDatabase = taskDbHelper.getWritableDatabase();
-                        mDatabase.insert(TaskDbHelper.TABLE,null,cv);*/
-
-                       /* remove(id);*/
-                        presenter.onDeleteTaskButtonClicked(id);
                         holder.editText.setVisibility(View.GONE);
                     }
                 });
@@ -86,8 +78,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         holder.removeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                /*remove(id);*/
                 presenter.onDeleteTaskButtonClicked(id);
                 swapCursor(presenter.onGetAllTaskClicked());
             }
@@ -110,26 +100,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         }
     }
 
-/*    private void remove(long id) {
-        TaskDbHelper taskDbHelper = new TaskDbHelper(context);
-        mDatabase = taskDbHelper.getWritableDatabase();
-        mDatabase.delete(TaskDbHelper.TABLE,TaskDbHelper.COLUMN_ID+"="+id,null);
-        swapCursor(getAllItems());
-    }*/
-/*
-    private Cursor getAllItems() {
-        return mDatabase.query(
-                TaskDbHelper.TABLE,
-                null,
-                null,
-                null,
-                null,
-                null,
-                TaskDbHelper.COLUMN_ID + " DESC"
-        );
-    }*/
-
-
     public class ViewHolder extends RecyclerView.ViewHolder {
         private Button editButton, removeButton;
         private TextView nameView;
@@ -142,6 +112,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
             nameView = (TextView) view.findViewById(R.id.nameView);
             editText = (EditText) view.findViewById(R.id.editView);
         }
+
+
 
 
     }
