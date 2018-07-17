@@ -1,0 +1,61 @@
+package com.andrewxa.todolist.view;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import com.andrewxa.todolist.R;
+import com.andrewxa.todolist.contract.Contract;
+import com.andrewxa.todolist.adapter.TaskAdapter;
+import com.andrewxa.todolist.presenter.Presenter;
+
+public class MainActivity extends AppCompatActivity implements Contract.IView{
+
+    private RecyclerView recyclerView;
+    private TaskAdapter mAdapter;
+    private EditText itemET;
+    private Button btn;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        recyclerView = (RecyclerView) findViewById(R.id.list);
+      /*  recyclerView.setLayoutManager(new LinearLayoutManager(this));*/
+
+        itemET = findViewById(R.id.item_edit_text);
+        btn = findViewById(R.id.add_btn);
+
+        final Presenter presenter = new Presenter(this,this);
+
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.onAddTaskButtonClicked(itemET.getText().toString());
+                itemET.setText("");
+            }
+        });
+    }
+
+    @Override
+    public void succesAddedTask(Cursor cursor) {
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new TaskAdapter(this,cursor);
+        recyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void unsuccesAddedTask() {
+
+    }
+}

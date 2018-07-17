@@ -1,4 +1,4 @@
-package com.andrewxa.todolist;
+package com.andrewxa.todolist.adapter;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,17 +12,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.andrewxa.todolist.db.TaskDbHelper;
+import com.andrewxa.todolist.R;
+import com.andrewxa.todolist.contract.Contract;
+import com.andrewxa.todolist.data.model.Task;
+import com.andrewxa.todolist.data.sqlite.SqliteTable;
+import com.andrewxa.todolist.presenter.Presenter;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
     SQLiteDatabase mDatabase;
     private Context context;
     private Cursor cursor;
+    private Presenter presenter;
 
     public TaskAdapter(Context context, Cursor cursor) {
         this.context = context;
         this.cursor = cursor;
+        presenter = new Presenter((Contract.IView) context,context);
 
     }
 
@@ -38,33 +44,37 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         if(!cursor.moveToPosition(position)) {
             return;
         }
-        String name = cursor.getString(cursor.getColumnIndex(TaskDbHelper.COLUMN_NAME));
-        final long id = cursor.getLong(cursor.getColumnIndex(TaskDbHelper.COLUMN_ID));
+        String name = cursor.getString(cursor.getColumnIndex(SqliteTable.COLUMN_NAME));
+        final long id = cursor.getLong(cursor.getColumnIndex(SqliteTable.COLUMN_ID));
 
         holder.nameView.setText(name);
 
         holder.editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 holder.editText.setVisibility(View.VISIBLE);
                 holder.editText.requestFocus();
                 holder.nameView.setVisibility(View.GONE);
-                final String oldTask = holder.nameView.getText().toString();
 
                 holder.editButton.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View view) {
+
                         holder.nameView.setVisibility(View.VISIBLE);
                         holder.nameView.setText(holder.editText.getText().toString());
 
-                        ContentValues cv = new ContentValues();
+                        presenter.onEditTaskButtonClicked(holder.editText.getText().toString());
+
+                        /*ContentValues cv = new ContentValues();
                         cv.put(TaskDbHelper.COLUMN_NAME,holder.editText.getText().toString());
                         TaskDbHelper taskDbHelper = new TaskDbHelper(context);
                         mDatabase = taskDbHelper.getWritableDatabase();
-                        mDatabase.insert(TaskDbHelper.TABLE,null,cv);
+                        mDatabase.insert(TaskDbHelper.TABLE,null,cv);*/
 
-                        remove(id);
+                       /* remove(id);*/
+                        presenter.onDeleteTaskButtonClicked(id);
                         holder.editText.setVisibility(View.GONE);
                     }
                 });
@@ -76,7 +86,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         holder.removeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                remove(id);
+
+                /*remove(id);*/
+                presenter.onDeleteTaskButtonClicked(id);
+                swapCursor(presenter.onGetAllTaskClicked());
             }
         });
     }
@@ -97,13 +110,13 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         }
     }
 
-    private void remove(long id) {
+/*    private void remove(long id) {
         TaskDbHelper taskDbHelper = new TaskDbHelper(context);
         mDatabase = taskDbHelper.getWritableDatabase();
         mDatabase.delete(TaskDbHelper.TABLE,TaskDbHelper.COLUMN_ID+"="+id,null);
         swapCursor(getAllItems());
-    }
-
+    }*/
+/*
     private Cursor getAllItems() {
         return mDatabase.query(
                 TaskDbHelper.TABLE,
@@ -114,7 +127,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
                 null,
                 TaskDbHelper.COLUMN_ID + " DESC"
         );
-    }
+    }*/
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -129,6 +142,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
             nameView = (TextView) view.findViewById(R.id.nameView);
             editText = (EditText) view.findViewById(R.id.editView);
         }
+
+
     }
 }
 
