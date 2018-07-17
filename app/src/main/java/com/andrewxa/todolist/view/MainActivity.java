@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
         setContentView(R.layout.activity_main);
 
         recyclerView = (RecyclerView) findViewById(R.id.list);
-
         itemET = findViewById(R.id.item_edit_text);
         btn = findViewById(R.id.add_btn);
 
@@ -52,9 +51,11 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
         });
     }
 
-  public void updateData(Cursor cursor) {
-      mAdapter.update(cursor);
-  }
+
+    public void updateData(Cursor cursor) {
+        mAdapter.update(cursor);
+    }
+
     @Override
     public void message(String msg) {
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();

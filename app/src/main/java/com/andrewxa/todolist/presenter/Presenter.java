@@ -1,17 +1,17 @@
 package com.andrewxa.todolist.presenter;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
-import com.andrewxa.todolist.adapter.TaskAdapter;
 import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.data.model.Task;
 import com.andrewxa.todolist.data.sqlite.SqliteController;
+import com.andrewxa.todolist.data.sqlite.SqliteTable;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Presenter implements Contract.IPresenter {
 
@@ -74,7 +74,20 @@ public class Presenter implements Contract.IPresenter {
     }
 
     @Override
-    public Cursor onGetAllTaskClicked() {
-       return sqliteController.getAllTasks();
+    public HashMap<Long, Task> onGetAllTaskClicked() {
+        Cursor cursor = sqliteController.getAllTasks();
+        cursor.moveToFirst();
+
+        LinkedHashMap<Long,Task> tasks = new LinkedHashMap<>();
+       /* List<Task> tasks = new ArrayList<>();*/
+
+        while (!cursor.isAfterLast()) {
+            /*tasks.add(new Task(cursor.getString(cursor.getColumnIndex(SqliteTable.COLUMN_NAME))));*/
+            tasks.put(cursor.getLong(cursor.getColumnIndex(SqliteTable.COLUMN_ID)),
+                    new Task(cursor.getString(cursor.getColumnIndex(SqliteTable.COLUMN_NAME))));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return tasks;
     }
 }

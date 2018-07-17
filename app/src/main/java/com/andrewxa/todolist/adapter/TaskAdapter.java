@@ -18,15 +18,21 @@ import com.andrewxa.todolist.data.model.Task;
 import com.andrewxa.todolist.data.sqlite.SqliteTable;
 import com.andrewxa.todolist.presenter.Presenter;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
     private Context context;
-    private Cursor cursor;
+    /*private Cursor cursor;*/
+    HashMap<Long,Task> tasks;
     private Presenter presenter;
 
-    public TaskAdapter(Context context, Cursor cursor) {
+    public TaskAdapter(Context context, HashMap<Long,Task> tasks) {
         this.context = context;
-        this.cursor = cursor;
+        /*this.cursor = cursor;*/
+        this.tasks = tasks;
         presenter = new Presenter((Contract.IView) context,context);
 
     }
@@ -40,14 +46,16 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        if(!cursor.moveToPosition(position)) {
+/*        if(!cursor.moveToPosition(position)) {
             return;
-        }
+        }*/
 
-        String name = cursor.getString(cursor.getColumnIndex(SqliteTable.COLUMN_NAME));
-        final long id = cursor.getLong(cursor.getColumnIndex(SqliteTable.COLUMN_ID));
+        /*String name = cursor.getString(cursor.getColumnIndex(SqliteTable.COLUMN_NAME));
+        String name = tasks.
+        final long id = cursor.getLong(cursor.getColumnIndex(SqliteTable.COLUMN_ID));*/
 
-        holder.nameView.setText(name);
+        holder.nameView.setText(tasks.get(position).getName());
+        long id = tasks.get(tasks.get(position).getName())
 
         holder.editButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,15 +94,16 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
     @Override
     public int getItemCount() {
-        return cursor.getCount();
+        return tasks.size();
     }
 
     public void update(Cursor cursor) {
-        swapCursor(cursor);
+        /*swapCursor(cursor);*/
+        notifyDataSetChanged();
     }
 
 
-    public void swapCursor(Cursor newCursor) {
+/*    public void swapCursor(Cursor newCursor) {
         if(cursor != null) {
             cursor.close();
         }
@@ -103,7 +112,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         if(newCursor != null) {
             notifyDataSetChanged();
         }
-    }
+    }*/
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private Button editButton, removeButton;

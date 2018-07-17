@@ -4,6 +4,8 @@ import android.database.Cursor;
 
 import com.andrewxa.todolist.data.model.Task;
 
+import java.util.HashMap;
+
 public interface Contract {
 
     interface IModel {
@@ -22,7 +24,7 @@ public interface Contract {
 
          void onDeleteTaskButtonClicked(long id);
 
-         Cursor onGetAllTaskClicked();
+         HashMap<Long, Task> onGetAllTaskClicked();
 
          void initial();
      }
