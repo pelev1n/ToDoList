@@ -15,19 +15,18 @@ import android.widget.TextView;
 import com.andrewxa.todolist.R;
 import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.data.model.Task;
-import com.andrewxa.todolist.data.sqlite.SqliteTable;
 import com.andrewxa.todolist.presenter.Presenter;
+import com.andrewxa.todolist.utils.myOnClickListener;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
     private Context context;
     private List<Task> tasks;
     private Presenter presenter;
-    Contract.IView view;
+    private myOnClickListener myOnClickListener;
+
 
     public TaskAdapter(Context context, List<Task> tasks) {
         this.context = context;
@@ -98,7 +97,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         return tasks.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private Button editButton, removeButton;
         private TextView nameView;
         private EditText editText;
@@ -109,8 +108,20 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
             removeButton = (Button) view.findViewById(R.id.removeButton);
             nameView = (TextView) view.findViewById(R.id.nameView);
             editText = (EditText) view.findViewById(R.id.editView);
+
+            editButton.setOnClickListener(this);
+            removeButton.setOnClickListener(this);
         }
 
+
+        @Override
+        public void onClick(View view) {
+            if(view.getId() == editButton.getId()) {
+                myOnClickListener.onSimpleClick(getAdapterPosition());
+            } else if(view.getId() == removeButton.getId()) {
+                myOnClickListener.onItemClick(view,getAdapterPosition(),"kek");
+            }
+        }
 
 
 

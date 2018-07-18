@@ -52,9 +52,9 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
                 itemET.setText("");
             }
         });
+
+
     }
-
-
 
 
     @Override
