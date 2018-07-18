@@ -27,6 +27,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
     private Context context;
     private List<Task> tasks;
     private Presenter presenter;
+    Contract.IView view;
 
     public TaskAdapter(Context context, List<Task> tasks) {
         this.context = context;
@@ -63,6 +64,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
                         holder.nameView.setVisibility(View.VISIBLE);
                         holder.nameView.setText(holder.editText.getText().toString());
                         String newTask = holder.editText.getText().toString();
+
+
 
                         if(!presenter.onCheckTaskClicked(newTask)) {
                             presenter.incorectTask();

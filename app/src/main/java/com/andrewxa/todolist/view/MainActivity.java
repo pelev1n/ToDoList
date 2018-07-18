@@ -55,9 +55,14 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
     }
 
 
+
+
+    @Override
     public void updateData(List<Task> tasks) {
         mAdapter.update(tasks);
     }
+
+
 
     @Override
     public void message(String msg) {
