@@ -27,6 +27,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
     private Presenter presenter;
     private myOnClickListener myOnClickListener;
 
+    public void setMyOnClickListener(com.andrewxa.todolist.utils.myOnClickListener myOnClickListener) {
+        this.myOnClickListener = myOnClickListener;
+    }
 
     public TaskAdapter(Context context, List<Task> tasks) {
         this.context = context;

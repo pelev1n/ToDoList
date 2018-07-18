@@ -1,8 +1,5 @@
 package com.andrewxa.todolist.view;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -18,13 +15,14 @@ import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.adapter.TaskAdapter;
 import com.andrewxa.todolist.data.model.Task;
 import com.andrewxa.todolist.presenter.Presenter;
+import com.andrewxa.todolist.utils.myOnClickListener;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements Contract.IView{
+public class MainActivity extends AppCompatActivity implements Contract.IView {
 
     private RecyclerView recyclerView;
-    private TaskAdapter mAdapter;
+    private TaskAdapter adapter;
     private EditText itemET;
     private Button btn;
 
@@ -38,12 +36,24 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
         btn = findViewById(R.id.add_btn);
 
 
-        final Presenter presenter = new Presenter(this,this);
+        final Presenter presenter = new Presenter(this, this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new TaskAdapter(this,presenter.getAllTaskClicked());
-        recyclerView.setAdapter(mAdapter);
+        adapter = new TaskAdapter(this, presenter.getAllTaskClicked());
+        recyclerView.setAdapter(adapter);
 
+
+        adapter.setMyOnClickListener(new myOnClickListener() {
+            @Override
+            public void onItemClick(View view, int position, String passString) {
+                Toast.makeText(MainActivity.this, "click", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSimpleClick(int position) {
+                Toast.makeText(MainActivity.this, "click 2", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,13 +69,12 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
 
     @Override
     public void updateData(List<Task> tasks) {
-        mAdapter.update(tasks);
+        adapter.update(tasks);
     }
-
 
 
     @Override
     public void message(String msg) {
-        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }
