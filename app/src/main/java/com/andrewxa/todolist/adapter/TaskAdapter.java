@@ -62,8 +62,13 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
                         holder.nameView.setVisibility(View.VISIBLE);
                         holder.nameView.setText(holder.editText.getText().toString());
+                        String newTask = holder.editText.getText().toString();
 
-                        presenter.onEditTaskButtonClicked(holder.editText.getText().toString(),id);
+                        if(!presenter.onCheckTaskClicked(newTask)) {
+                            presenter.incorectTask();
+                            return;
+                        }
+                        presenter.onEditTaskButtonClicked(newTask,id);
                         holder.editText.setVisibility(View.GONE);
                     }
                 });

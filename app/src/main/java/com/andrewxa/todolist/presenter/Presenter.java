@@ -29,6 +29,10 @@ public class Presenter implements Contract.IPresenter {
     }
     @Override
     public void onAddTaskButtonClicked(String taskName) {
+        if(!onCheckTaskClicked(taskName)) {
+            incorectTask();
+            return;
+        }
         Task task = new Task(0,taskName);
         boolean isAdded = sqliteController.addTask(task);
         if(isAdded) {
@@ -41,6 +45,7 @@ public class Presenter implements Contract.IPresenter {
 
     @Override
     public void onEditTaskButtonClicked(String newTaskName,long id) {
+        if(!onCheckTaskClicked(newTaskName)) return;
         Task task = new Task(id,newTaskName);
         boolean isEdited = sqliteController.editTask(task,id);
         if(isEdited) {
@@ -66,5 +71,13 @@ public class Presenter implements Contract.IPresenter {
     @Override
     public List<Task> getAllTaskClicked() {
         return sqliteController.getAllTasks();
+    }
+
+    public void incorectTask() {
+        mView.message("Please enter task");
+    }
+
+    public boolean onCheckTaskClicked(String task) {
+        return task.length() > 1;
     }
 }
