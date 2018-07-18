@@ -1,9 +1,6 @@
 package com.andrewxa.todolist.adapter;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.andrewxa.todolist.R;
-import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.data.model.Task;
-import com.andrewxa.todolist.presenter.Presenter;
 import com.andrewxa.todolist.utils.myOnClickListener;
 
 import java.util.List;
@@ -24,15 +19,18 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
     private Context context;
     private List<Task> tasks;
-    private Presenter presenter;
     private myOnClickListener myOnClickListener;
 
 
     public TaskAdapter(Context context, List<Task> tasks) {
         this.context = context;
         this.tasks = tasks;
-        presenter = new Presenter((Contract.IView) context,context);
 
+    }
+
+
+    public void setMyOnClickListener(com.andrewxa.todolist.utils.myOnClickListener myOnClickListener) {
+        this.myOnClickListener = myOnClickListener;
     }
 
     @Override
@@ -46,46 +44,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         Task task = tasks.get(position);
         holder.nameView.setText(task.getName());
-        final long id = task.getId();
-
-        holder.editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                holder.editText.setVisibility(View.VISIBLE);
-                holder.editText.requestFocus();
-                holder.nameView.setVisibility(View.GONE);
-                holder.editButton.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-
-                        holder.nameView.setVisibility(View.VISIBLE);
-                        holder.nameView.setText(holder.editText.getText().toString());
-                        String newTask = holder.editText.getText().toString();
-
-
-
-                        if(!presenter.onCheckTaskClicked(newTask)) {
-                            presenter.incorectTask();
-                            return;
-                        }
-                        presenter.onEditTaskButtonClicked(newTask,id);
-                        holder.editText.setVisibility(View.GONE);
-                    }
-                });
-
-            }
-        });
-
-
-        holder.removeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                presenter.onDeleteTaskButtonClicked(id);
-            }
-        });
     }
+
 
     public void update(List<Task> newTasks) {
         this.tasks = newTasks;
@@ -97,34 +57,58 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         return tasks.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private Button editButton, removeButton;
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private Button editButton, removeButton, confirmButton;
         private TextView nameView;
         private EditText editText;
 
         ViewHolder(View view){
             super(view);
             editButton = (Button) view.findViewById(R.id.editButton);
+            confirmButton = (Button) view.findViewById(R.id.confirmButton);
             removeButton = (Button) view.findViewById(R.id.removeButton);
             nameView = (TextView) view.findViewById(R.id.nameView);
             editText = (EditText) view.findViewById(R.id.editView);
 
             editButton.setOnClickListener(this);
+            confirmButton.setOnClickListener(this);
             removeButton.setOnClickListener(this);
         }
 
 
         @Override
         public void onClick(View view) {
+
+            long id = tasks.get(getAdapterPosition()).getId();
+            String oldTask = nameView.getText().toString();
+
             if(view.getId() == editButton.getId()) {
-                myOnClickListener.onSimpleClick(getAdapterPosition());
+
+                editButton.setVisibility(View.GONE);
+                confirmButton.setVisibility(View.VISIBLE);
+                nameView.setVisibility(View.GONE);
+                editText.setVisibility(View.VISIBLE);
+                editText.requestFocus();
+
+            } else if(view.getId() == confirmButton.getId()) {
+
+                if(editText.getText().toString().length() <1 ) {
+                    editText.setError("Task should be minimum 1 symbol");
+                    editText.requestFocus();
+                } else {
+                    confirmButton.setVisibility(View.GONE);
+                    nameView.setText(editText.getText().toString());
+                    nameView.setVisibility(View.VISIBLE);
+                    editText.setVisibility(View.GONE);
+                    myOnClickListener.onConfirmClick(id, editText.getText().toString());
+                    editButton.setVisibility(View.VISIBLE);
+                }
+
             } else if(view.getId() == removeButton.getId()) {
-                myOnClickListener.onItemClick(view,getAdapterPosition(),"kek");
+                myOnClickListener.onRemoveClick(id);
             }
+
         }
-
-
-
     }
 }
 

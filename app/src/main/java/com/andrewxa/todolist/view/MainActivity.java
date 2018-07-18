@@ -1,8 +1,5 @@
 package com.andrewxa.todolist.view;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -18,13 +15,14 @@ import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.adapter.TaskAdapter;
 import com.andrewxa.todolist.data.model.Task;
 import com.andrewxa.todolist.presenter.Presenter;
+import com.andrewxa.todolist.utils.myOnClickListener;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Contract.IView{
 
     private RecyclerView recyclerView;
-    private TaskAdapter mAdapter;
+    private TaskAdapter adapter;
     private EditText itemET;
     private Button btn;
 
@@ -41,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
         final Presenter presenter = new Presenter(this,this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new TaskAdapter(this,presenter.getAllTaskClicked());
-        recyclerView.setAdapter(mAdapter);
+        adapter = new TaskAdapter(this,presenter.getAllTaskClicked());
+        recyclerView.setAdapter(adapter);
 
 
         btn.setOnClickListener(new View.OnClickListener() {
@@ -53,13 +51,23 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
             }
         });
 
+        adapter.setMyOnClickListener(new myOnClickListener() {
+            @Override
+            public void onConfirmClick(long id, String newTask) {
+                presenter.onEditTaskButtonClicked(newTask,id);
+            }
+
+            @Override
+            public void onRemoveClick(long id) {
+                presenter.onDeleteTaskButtonClicked(id);
+            }
+        });
 
     }
 
-
     @Override
     public void updateData(List<Task> tasks) {
-        mAdapter.update(tasks);
+        adapter.update(tasks);
     }
 
 
@@ -68,4 +76,5 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
     public void message(String msg) {
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
     }
+
 }

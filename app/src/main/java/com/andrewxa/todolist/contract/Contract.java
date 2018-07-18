@@ -10,9 +10,7 @@ public interface Contract {
     interface IModel {
 
         boolean addTask(Task task);
-
         boolean editTask(Task task, long id);
-
         boolean deleteTask(long id);
     }
 

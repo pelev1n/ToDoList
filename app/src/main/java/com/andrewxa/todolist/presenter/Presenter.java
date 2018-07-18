@@ -1,7 +1,6 @@
 package com.andrewxa.todolist.presenter;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
@@ -9,7 +8,6 @@ import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.data.model.Task;
 import com.andrewxa.todolist.data.sqlite.SqliteController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Presenter implements Contract.IPresenter {
@@ -19,9 +17,6 @@ public class Presenter implements Contract.IPresenter {
     Context mContext;
     SqliteController sqliteController;
 
-    public Presenter() {
-
-    }
     public Presenter(@NonNull Contract.IView view, Context context) {
         mView = view;
         mContext = context;
@@ -29,7 +24,7 @@ public class Presenter implements Contract.IPresenter {
     }
     @Override
     public void onAddTaskButtonClicked(String taskName) {
-        if(!onCheckTaskClicked(taskName)) {
+        if(!onCheckTaskClicked(taskName))  {
             incorectTask();
             return;
         }
