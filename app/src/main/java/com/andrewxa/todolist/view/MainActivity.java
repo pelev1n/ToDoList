@@ -19,7 +19,7 @@ import com.andrewxa.todolist.utils.myOnClickListener;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements Contract.IView{
+public class MainActivity extends AppCompatActivity implements Contract.view {
 
     private RecyclerView recyclerView;
     private TaskAdapter adapter;
@@ -39,14 +39,14 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
         final Presenter presenter = new Presenter(this,this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new TaskAdapter(this,presenter.getAllTaskClicked());
+        adapter = new TaskAdapter(this,presenter.getAllTask());
         recyclerView.setAdapter(adapter);
 
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.onAddTaskButtonClicked(itemET.getText().toString());
+                presenter.addTask(itemET.getText().toString());
                 itemET.setText("");
             }
         });
@@ -54,12 +54,12 @@ public class MainActivity extends AppCompatActivity implements Contract.IView{
         adapter.setMyOnClickListener(new myOnClickListener() {
             @Override
             public void onConfirmClick(long id, String newTask) {
-                presenter.onEditTaskButtonClicked(newTask,id);
+                presenter.editTask(newTask,id);
             }
 
             @Override
             public void onRemoveClick(long id) {
-                presenter.onDeleteTaskButtonClicked(id);
+                presenter.deleteTask(id);
             }
         });
 

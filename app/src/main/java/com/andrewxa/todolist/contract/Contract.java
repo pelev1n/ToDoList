@@ -7,22 +7,22 @@ import java.util.List;
 
 public interface Contract {
 
-    interface IModel {
+    interface Model {
 
         boolean addTask(Task task);
         boolean editTask(Task task, long id);
         boolean deleteTask(long id);
     }
 
-     interface IPresenter {
+     interface Presenter {
 
-        void onAddTaskButtonClicked(String taskName);
-        void onEditTaskButtonClicked(String newTaskName, long id);
-        void onDeleteTaskButtonClicked(long id);
-        List<Task> getAllTaskClicked();
+        void addTask(String taskName);
+        void editTask(String newTaskName, long id);
+        void deleteTask(long id);
+        List<Task> getAllTask();
      }
 
-    interface IView {
+    interface view {
         void message(String msg);
         void updateData(List<Task> tasks);
     }

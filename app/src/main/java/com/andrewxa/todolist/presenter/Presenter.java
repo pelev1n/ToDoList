@@ -7,23 +7,24 @@ import android.widget.Toast;
 import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.data.model.Task;
 import com.andrewxa.todolist.data.sqlite.SqliteController;
+import com.andrewxa.todolist.data.sqlite.SqliteHelper;
 
 import java.util.List;
 
-public class Presenter implements Contract.IPresenter {
+public class Presenter implements Contract.Presenter {
 
     @NonNull
-    Contract.IView mView;
-    Context mContext;
+    Contract.view view;
+    Context сontext;
     SqliteController sqliteController;
 
-    public Presenter(@NonNull Contract.IView view, Context context) {
-        mView = view;
-        mContext = context;
-        sqliteController = new SqliteController(context);
+    public Presenter(@NonNull Contract.view view, Context context) {
+        this.view = view;
+        this.сontext = context;
+        sqliteController = new SqliteController(new SqliteHelper(context));
     }
     @Override
-    public void onAddTaskButtonClicked(String taskName) {
+    public void addTask(String taskName) {
         if(!onCheckTaskClicked(taskName))  {
             incorectTask();
             return;
@@ -31,45 +32,45 @@ public class Presenter implements Contract.IPresenter {
         Task task = new Task(0,taskName);
         boolean isAdded = sqliteController.addTask(task);
         if(isAdded) {
-            mView.updateData(getAllTaskClicked());
-            mView.message("Task has been added");
+            view.updateData(getAllTask());
+            view.message("Task has been added");
         }
         else
-            mView.message("Failed to edit task");
+            view.message("Failed to edit task");
     }
 
     @Override
-    public void onEditTaskButtonClicked(String newTaskName,long id) {
+    public void editTask(String newTaskName, long id) {
         if(!onCheckTaskClicked(newTaskName)) return;
         Task task = new Task(id,newTaskName);
         boolean isEdited = sqliteController.editTask(task,id);
         if(isEdited) {
-            mView.updateData(getAllTaskClicked());
-            mView.message("Task has been edited!");
+            view.updateData(getAllTask());
+            view.message("Task has been edited!");
         }
         else
-            mView.message("Failed to edit task");
+            view.message("Failed to edit task");
 
     }
 
     @Override
-    public void onDeleteTaskButtonClicked(long id) {
+    public void deleteTask(long id) {
         boolean isDeleted  = sqliteController.deleteTask(id);
         if(isDeleted) {
-            mView.updateData(getAllTaskClicked());
-            mView.message("Task has been deleted");
+            view.updateData(getAllTask());
+            view.message("Task has been deleted");
         }
         else
-            Toast.makeText(mContext,"Failed to delete task",Toast.LENGTH_SHORT).show();
+            Toast.makeText(сontext,"Failed to delete task",Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public List<Task> getAllTaskClicked() {
+    public List<Task> getAllTask() {
         return sqliteController.getAllTasks();
     }
 
     public void incorectTask() {
-        mView.message("Please enter task");
+        view.message("Please enter task");
     }
 
     public boolean onCheckTaskClicked(String task) {

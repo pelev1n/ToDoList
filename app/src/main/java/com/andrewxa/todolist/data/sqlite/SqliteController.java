@@ -8,15 +8,14 @@ import com.andrewxa.todolist.data.model.Task;
 
 import java.util.List;
 
-public class SqliteController implements Contract.IModel {
+public class SqliteController implements Contract.Model {
 
 
     private SqliteHelper sqliteHelper;
     Context context;
 
-    public SqliteController(Context mContext) {
-        context = mContext;
-        sqliteHelper = new SqliteHelper(context);
+    public SqliteController(SqliteHelper sqliteHelper) {
+        this.sqliteHelper = sqliteHelper;
     }
 
 

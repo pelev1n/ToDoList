@@ -75,6 +75,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
                 tasks.add(task);
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return tasks;
     }
 
