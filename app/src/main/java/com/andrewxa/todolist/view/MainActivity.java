@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
         final Presenter presenter = new Presenter(this,this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new TaskAdapter(this,presenter.getAllTask());
+        adapter = new TaskAdapter(presenter.getAllTask());
         recyclerView.setAdapter(adapter);
 
 

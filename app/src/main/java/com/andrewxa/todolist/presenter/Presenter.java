@@ -5,6 +5,9 @@ import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.andrewxa.todolist.contract.Contract;
+import com.andrewxa.todolist.data.database.TaskRepository;
+import com.andrewxa.todolist.data.local.TaskDataSource;
+import com.andrewxa.todolist.data.local.TaskDatabase;
 import com.andrewxa.todolist.data.model.Task;
 import com.andrewxa.todolist.data.sqlite.SqliteController;
 import com.andrewxa.todolist.data.sqlite.SqliteHelper;
@@ -16,12 +19,15 @@ public class Presenter implements Contract.Presenter {
     @NonNull
     Contract.view view;
     Context сontext;
-    SqliteController sqliteController;
+    TaskDatabase taskDatabase;
+    TaskRepository taskRepository;
 
-    public Presenter(@NonNull Contract.view view, Context context) {
+    public Presenter(Contract.view view,Context context) {
         this.view = view;
         this.сontext = context;
-        sqliteController = new SqliteController(new SqliteHelper(context));
+        taskDatabase = TaskDatabase.getInstance(context);   // Create database
+        taskRepository = TaskRepository.getInstance(TaskDataSource.getInstance(taskDatabase.taskDAO()));
+
     }
     @Override
     public void addTask(String taskName) {
@@ -29,31 +35,20 @@ public class Presenter implements Contract.Presenter {
             incorectTask();
             return;
         }
-        Task task = new Task(0,taskName);
-        boolean isAdded = sqliteController.addTask(task);
-        if(isAdded) {
-            view.updateData(getAllTask());
-            view.message("Task has been added");
-        }
-        else
-            view.message("Failed to edit task");
+        Task task = new Task(taskName);
+        taskRepository.inserTask(task);
     }
 
     @Override
     public void editTask(String newTaskName, long id) {
         if(!onCheckTaskClicked(newTaskName)) return;
-        Task task = new Task(id,newTaskName);
-        boolean isEdited = sqliteController.editTask(task,id);
-        if(isEdited) {
-            view.updateData(getAllTask());
-            view.message("Task has been edited!");
-        }
-        else
-            view.message("Failed to edit task");
-
+        Task task = new Task(newTaskName);
+        taskRepository.inserTask(task);
     }
 
-    @Override
+
+
+/*    @Override
     public void deleteTask(long id) {
         boolean isDeleted  = sqliteController.deleteTask(id);
         if(isDeleted) {
@@ -62,12 +57,18 @@ public class Presenter implements Contract.Presenter {
         }
         else
             Toast.makeText(сontext,"Failed to delete task",Toast.LENGTH_SHORT).show();
+    }*/
+
+    @Override
+    public void deleteTask(long id) {
+        taskRepository.deleteTaskById(id);
     }
 
     @Override
     public List<Task> getAllTask() {
-        return sqliteController.getAllTasks();
+        return taskRepository.getAllTasks();
     }
+
 
     public void incorectTask() {
         view.message("Please enter task");

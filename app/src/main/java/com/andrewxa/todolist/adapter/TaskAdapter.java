@@ -22,10 +22,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
     private myOnClickListener myOnClickListener;
 
 
-    public TaskAdapter(Context context, List<Task> tasks) {
-        this.context = context;
+    public TaskAdapter(List<Task> tasks) {
         this.tasks = tasks;
-
     }
 
 
@@ -35,7 +33,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
     @Override
     public TaskAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.list_item, parent, false);
         return new ViewHolder(view);
     }

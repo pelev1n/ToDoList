@@ -1,11 +1,25 @@
 package com.andrewxa.todolist.data.model;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
+@Entity(tableName = "tasks")
 public class Task {
-    private long id;
+
+    @NonNull
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    public long id;
+
+    @NonNull
+    @ColumnInfo(name = "name")
     private String name;
 
-    public Task(long id, String name) {
-        this.id = id;
+    @Ignore
+    public Task(String name) {
         this.name = name;
     }
 
