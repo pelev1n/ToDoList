@@ -16,13 +16,11 @@ public class Presenter implements Contract.Presenter {
 
     @NonNull
     Contract.view view;
-    Context сontext;
     TaskDatabase taskDatabase;
     TaskRepository taskRepository;
 
     public Presenter(Contract.view view,Context context) {
         this.view = view;
-        this.сontext = context;
         taskDatabase = TaskDatabase.getInstance(context);   // Create database
         taskRepository = TaskRepository.getInstance(TaskDataSource.getInstance(taskDatabase.taskDAO()));
 
