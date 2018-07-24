@@ -9,8 +9,6 @@ import com.andrewxa.todolist.data.database.TaskRepository;
 import com.andrewxa.todolist.data.local.TaskDataSource;
 import com.andrewxa.todolist.data.local.TaskDatabase;
 import com.andrewxa.todolist.data.model.Task;
-import com.andrewxa.todolist.data.sqlite.SqliteController;
-import com.andrewxa.todolist.data.sqlite.SqliteHelper;
 
 import java.util.List;
 
@@ -37,31 +35,22 @@ public class Presenter implements Contract.Presenter {
         }
         Task task = new Task(taskName);
         taskRepository.inserTask(task);
+        view.updateData(getAllTask());
     }
 
     @Override
     public void editTask(String newTaskName, long id) {
         if(!onCheckTaskClicked(newTaskName)) return;
-        Task task = new Task(newTaskName);
-        taskRepository.inserTask(task);
+        taskRepository.updateTaskById(newTaskName,id);
+        view.updateData(getAllTask());
     }
 
 
 
-/*    @Override
-    public void deleteTask(long id) {
-        boolean isDeleted  = sqliteController.deleteTask(id);
-        if(isDeleted) {
-            view.updateData(getAllTask());
-            view.message("Task has been deleted");
-        }
-        else
-            Toast.makeText(сontext,"Failed to delete task",Toast.LENGTH_SHORT).show();
-    }*/
-
     @Override
     public void deleteTask(long id) {
         taskRepository.deleteTaskById(id);
+        view.updateData(getAllTask());
     }
 
     @Override

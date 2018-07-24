@@ -9,16 +9,14 @@ import android.support.annotation.NonNull;
 @Entity(tableName = "tasks")
 public class Task {
 
-    @NonNull
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     public long id;
 
-    @NonNull
     @ColumnInfo(name = "name")
     private String name;
 
-    @Ignore
+
     public Task(String name) {
         this.name = name;
     }

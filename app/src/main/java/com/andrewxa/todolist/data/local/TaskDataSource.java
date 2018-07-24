@@ -27,23 +27,13 @@ public class TaskDataSource implements TaskDataSourceIntrf {
     }
 
     @Override
-    public Task getUserById(long taskId) {
-        return taskDAO.getUserById(taskId);
-    }
-
-    @Override
     public void inserTask(Task... tasks) {
         taskDAO.inserTask(tasks);
     }
 
     @Override
-    public void updateTask(Task... tasks) {
-        taskDAO.updateTask(tasks);
-    }
-
-    @Override
-    public void deleteTask(Task task) {
-        taskDAO.deleteTask(task);
+    public void updateTaskById(String taskName, long taskId) {
+        taskDAO.updateTaskById(taskName,taskId);
     }
 
     @Override

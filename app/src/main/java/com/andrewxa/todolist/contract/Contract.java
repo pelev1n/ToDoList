@@ -8,10 +8,10 @@ import java.util.List;
 public interface Contract {
 
     interface Model {
-
-        boolean addTask(Task task);
-        boolean editTask(Task task, long id);
-        boolean deleteTask(long id);
+        void inserTask(Task... tasks);
+        void updateTaskById(String taskName, long taskId);
+        void deleteTaskById(long taskId);
+        List<Task> getAllTasks();
     }
 
      interface Presenter {

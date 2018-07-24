@@ -26,23 +26,13 @@ public class TaskRepository implements TaskDataSourceIntrf {
     }
 
     @Override
-    public Task getUserById(long taskId) {
-        return localDataSource.getUserById(taskId);
-    }
-
-    @Override
     public void inserTask(Task... tasks) {
         localDataSource.inserTask(tasks);
     }
 
     @Override
-    public void updateTask(Task... tasks) {
-        localDataSource.updateTask(tasks);
-    }
-
-    @Override
-    public void deleteTask(Task task) {
-        localDataSource.deleteTask(task);
+    public void updateTaskById(String taskName, long taskId) {
+        localDataSource.updateTaskById(taskName,taskId);
     }
 
     @Override
