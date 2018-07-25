@@ -17,6 +17,7 @@ import com.andrewxa.todolist.data.model.Task;
 import com.andrewxa.todolist.presenter.Presenter;
 import com.andrewxa.todolist.utils.myOnClickListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Contract.view {
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
         final Presenter presenter = new Presenter(this,this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         adapter = new TaskAdapter(presenter.getAllTask());
         recyclerView.setAdapter(adapter);
 
@@ -46,20 +48,33 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.addTask(itemET.getText().toString());
+                new Thread(new Runnable() {
+                    public void run() {
+                        presenter.addTask(itemET.getText().toString());
+                    }
+                }).start();
                 itemET.setText("");
             }
         });
 
         adapter.setMyOnClickListener(new myOnClickListener() {
             @Override
-            public void onConfirmClick(long id, String newTask) {
-                presenter.editTask(newTask,id);
+            public void onConfirmClick(final long id, final String newTask) {
+
+                new Thread(new Runnable() {
+                    public void run() {
+                        presenter.editTask(newTask,id);
+                    }
+                }).start();
             }
 
             @Override
-            public void onRemoveClick(long id) {
-                presenter.deleteTask(id);
+            public void onRemoveClick(final long id) {
+                new Thread(new Runnable() {
+                    public void run() {
+                        presenter.deleteTask(id);
+                    }
+                }).start();
             }
         });
 

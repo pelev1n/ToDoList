@@ -5,6 +5,8 @@ import com.andrewxa.todolist.data.model.Task;
 
 import java.util.List;
 
+/*import io.reactivex.Flowable;*/
+
 public interface Contract {
 
     interface Model {
@@ -19,7 +21,7 @@ public interface Contract {
         void addTask(String taskName);
         void editTask(String newTaskName, long id);
         void deleteTask(long id);
-        List<Task> getAllTask();
+       List<Task> getAllTask();
      }
 
     interface view {

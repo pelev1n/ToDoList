@@ -5,6 +5,8 @@ import com.andrewxa.todolist.data.model.Task;
 
 import java.util.List;
 
+/*import io.reactivex.Flowable;*/
+
 public interface TaskDataSourceIntrf extends Contract.Model{
 
     List<Task> getAllTasks();
