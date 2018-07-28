@@ -1,8 +1,9 @@
 package com.andrewxa.todolist.presenter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 
 import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.data.database.TaskRepository;
@@ -11,6 +12,8 @@ import com.andrewxa.todolist.data.local.TaskDatabase;
 import com.andrewxa.todolist.data.model.Task;
 
 import java.util.List;
+
+import io.reactivex.Flowable;
 
 /*import io.reactivex.Flowable;*/
 
@@ -53,8 +56,11 @@ public class Presenter implements Contract.Presenter {
         view.updateData(getAllTask());
     }
 
+
+
+    @SuppressLint("StaticFieldLeak")
     @Override
-    public List<Task> getAllTask() {
+    public Flowable<List<Task>> getAllTask() {
         return taskRepository.getAllTasks();
     }
 

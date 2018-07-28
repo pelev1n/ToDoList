@@ -11,13 +11,15 @@ import com.andrewxa.todolist.data.model.Task;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 /*import io.reactivex.Flowable;*/
 
 @Dao
 public interface TaskDAO {
 
     @Query("SELECT * FROM tasks")
-    List<Task> getAllTasks();
+    Flowable<List<Task>> getAllTasks();
 
     @Insert
     void inserTask(Task... tasks);

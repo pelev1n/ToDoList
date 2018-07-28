@@ -1,5 +1,6 @@
 package com.andrewxa.todolist.view;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -18,14 +19,29 @@ import com.andrewxa.todolist.presenter.Presenter;
 import com.andrewxa.todolist.utils.myOnClickListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+
+import io.reactivex.Flowable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements Contract.view {
 
     private RecyclerView recyclerView;
-    private TaskAdapter adapter;
+    public TaskAdapter adapter;
     private EditText itemET;
     private Button btn;
+    Presenter presenter;
+    public CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,23 +52,40 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
         itemET = findViewById(R.id.item_edit_text);
         btn = findViewById(R.id.add_btn);
 
-
-        final Presenter presenter = new Presenter(this,this);
+        presenter = new Presenter(this,this);
+        loadData();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new TaskAdapter(presenter.getAllTask());
         recyclerView.setAdapter(adapter);
 
 
+
         btn.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
-                new Thread(new Runnable() {
-                    public void run() {
+                Disposable disposable = io.reactivex.Observable.create(new ObservableOnSubscribe<Object>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Object> e) {
                         presenter.addTask(itemET.getText().toString());
+                        e.onComplete();
                     }
-                }).start();
+                })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(new Consumer() {
+                            @Override
+                            public void accept(Object o) {
+
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+
+                            }
+                        });
+                compositeDisposable.add(disposable);
                 itemET.setText("");
             }
         });
@@ -60,29 +93,54 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
         adapter.setMyOnClickListener(new myOnClickListener() {
             @Override
             public void onConfirmClick(final long id, final String newTask) {
-
-                new Thread(new Runnable() {
-                    public void run() {
-                        presenter.editTask(newTask,id);
-                    }
-                }).start();
+                presenter.editTask(newTask,id);
             }
 
             @Override
             public void onRemoveClick(final long id) {
-                new Thread(new Runnable() {
-                    public void run() {
-                        presenter.deleteTask(id);
-                    }
-                }).start();
+                presenter.deleteTask(id);
             }
         });
 
     }
 
+    private void loadData() {
+        Disposable disposable = presenter.getAllTask()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<List<Task>>() {
+                    @Override
+                    public void accept(List<Task> tasks) throws Exception {
+                        adapter = new TaskAdapter(tasks);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Toast.makeText(MainActivity.this,""+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
+
+
     @Override
-    public void updateData(List<Task> tasks) {
-        adapter.update(tasks);
+    public void updateData(Flowable<List<Task>> tasks) {
+        Disposable disposable = presenter.getAllTask()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<List<Task>>() {
+                    @Override
+                    public void accept(List<Task> tasks) throws Exception {
+                        adapter.update(tasks);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Toast.makeText(MainActivity.this,""+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeDisposable.add(disposable);
+
     }
 
 

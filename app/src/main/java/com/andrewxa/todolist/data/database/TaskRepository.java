@@ -4,6 +4,8 @@ import com.andrewxa.todolist.data.model.Task;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 /*import io.reactivex.Flowable;*/
 
 public class TaskRepository implements TaskDataSourceIntrf {
@@ -23,7 +25,7 @@ public class TaskRepository implements TaskDataSourceIntrf {
     }
 
     @Override
-    public List<Task> getAllTasks() {
+    public Flowable<List<Task>> getAllTasks() {
         return localDataSource.getAllTasks();
     }
 
