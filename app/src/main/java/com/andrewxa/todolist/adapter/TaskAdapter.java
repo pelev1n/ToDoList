@@ -15,11 +15,8 @@ import com.andrewxa.todolist.utils.myOnClickListener;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
-
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
-    private Context context;
     private List<Task> tasks;
     private myOnClickListener myOnClickListener;
 

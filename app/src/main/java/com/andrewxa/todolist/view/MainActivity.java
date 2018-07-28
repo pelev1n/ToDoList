@@ -1,6 +1,5 @@
 package com.andrewxa.todolist.view;
 
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -19,20 +18,17 @@ import com.andrewxa.todolist.presenter.Presenter;
 import com.andrewxa.todolist.utils.myOnClickListener;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import io.reactivex.Flowable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+
 
 public class MainActivity extends AppCompatActivity implements Contract.view {
 
@@ -40,8 +36,8 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
     public TaskAdapter adapter;
     private EditText itemET;
     private Button btn;
-    Presenter presenter;
-    public CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private Presenter presenter;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
         btn = findViewById(R.id.add_btn);
 
         presenter = new Presenter(this,this);
+        adapter = new TaskAdapter(new ArrayList<Task>());
         loadData();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -77,12 +74,12 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
                         .subscribe(new Consumer() {
                             @Override
                             public void accept(Object o) {
-
+                                Toast.makeText(MainActivity.this,"Task successfully added",Toast.LENGTH_SHORT).show();
                             }
                         }, new Consumer<Throwable>() {
                             @Override
                             public void accept(Throwable throwable) throws Exception {
-
+                                Toast.makeText(MainActivity.this,""+throwable.getMessage(),Toast.LENGTH_SHORT).show();
                             }
                         });
                 compositeDisposable.add(disposable);
@@ -93,13 +90,52 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
         adapter.setMyOnClickListener(new myOnClickListener() {
             @Override
             public void onConfirmClick(final long id, final String newTask) {
-                presenter.editTask(newTask,id);
+                Disposable disposable = io.reactivex.Observable.create(new ObservableOnSubscribe<Object>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Object> e) {
+                        presenter.editTask(newTask,id);
+                        e.onComplete();
+                    }
+                })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(new Consumer() {
+                            @Override
+                            public void accept(Object o) {
+                                Toast.makeText(MainActivity.this,"Task successfully edited",Toast.LENGTH_SHORT).show();
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                Toast.makeText(MainActivity.this,""+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                compositeDisposable.add(disposable);
             }
 
             @Override
             public void onRemoveClick(final long id) {
-                presenter.deleteTask(id);
-            }
+                Disposable disposable = io.reactivex.Observable.create(new ObservableOnSubscribe<Object>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Object> e) {
+                        presenter.deleteTask(id);
+                        e.onComplete();
+                    }
+                })      .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(new Consumer() {
+                            @Override
+                            public void accept(Object o) {
+                                Toast.makeText(MainActivity.this,"Task successfully deleted",Toast.LENGTH_SHORT).show();
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                Toast.makeText(MainActivity.this,""+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                compositeDisposable.add(disposable);
+                }
         });
 
     }
@@ -111,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
                 .subscribe(new Consumer<List<Task>>() {
                     @Override
                     public void accept(List<Task> tasks) throws Exception {
-                        adapter = new TaskAdapter(tasks);
+                        adapter.update(tasks);
                     }
                 }, new Consumer<Throwable>() {
                     @Override

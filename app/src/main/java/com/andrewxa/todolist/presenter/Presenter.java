@@ -15,8 +15,6 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 
-/*import io.reactivex.Flowable;*/
-
 public class Presenter implements Contract.Presenter {
 
     @NonNull

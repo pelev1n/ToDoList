@@ -7,8 +7,6 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 
-/*import io.reactivex.Flowable;*/
-
 public class TaskDataSource implements TaskDataSourceIntrf {
 
     private TaskDAO taskDAO;
