@@ -50,13 +50,11 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
 
         presenter = new Presenter(this,this);
         adapter = new TaskAdapter(new ArrayList<Task>());
+
         loadData();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         recyclerView.setAdapter(adapter);
-
-
 
         btn.setOnClickListener(new View.OnClickListener() {
 
@@ -158,7 +156,6 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
         compositeDisposable.add(disposable);
     }
 
-
     @Override
     public void updateData(Flowable<List<Task>> tasks) {
         Disposable disposable = presenter.getAllTask()
@@ -178,8 +175,6 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
         compositeDisposable.add(disposable);
 
     }
-
-
 
     @Override
     public void message(String msg) {

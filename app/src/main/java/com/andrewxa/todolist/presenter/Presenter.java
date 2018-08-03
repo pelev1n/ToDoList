@@ -46,15 +46,11 @@ public class Presenter implements Contract.Presenter {
         view.updateData(getAllTask());
     }
 
-
-
     @Override
     public void deleteTask(long id) {
         taskRepository.deleteTaskById(id);
         view.updateData(getAllTask());
     }
-
-
 
     @SuppressLint("StaticFieldLeak")
     @Override
