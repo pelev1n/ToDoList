@@ -2,27 +2,32 @@ package com.andrewxa.todolist.presenter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import com.andrewxa.todolist.contract.Contract;
+import com.andrewxa.todolist.contract.ToDoView;
 import com.andrewxa.todolist.data.database.TaskRepository;
 import com.andrewxa.todolist.data.local.TaskDataSource;
 import com.andrewxa.todolist.data.local.TaskDatabase;
 import com.andrewxa.todolist.data.model.Task;
+import com.arellomobile.mvp.InjectViewState;
+import com.arellomobile.mvp.MvpPresenter;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
 
-public class Presenter implements Contract.Presenter {
+@InjectViewState
+public class Presenter extends MvpPresenter<ToDoView> implements Contract.Presenter {
 
     @NonNull
-    Contract.view view;
+    ToDoView view;
     TaskDatabase taskDatabase;
     TaskRepository taskRepository;
 
-    public Presenter(Contract.view view,Context context) {
+    public Presenter() {}
+
+    public Presenter(ToDoView view,Context context) {
         this.view = view;
         taskDatabase = TaskDatabase.getInstance(context);   // Create database
         taskRepository = TaskRepository.getInstance(TaskDataSource.getInstance(taskDatabase.taskDAO()));

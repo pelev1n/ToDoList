@@ -1,6 +1,5 @@
 package com.andrewxa.todolist.view;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,9 +12,15 @@ import android.widget.Toast;
 import com.andrewxa.todolist.R;
 import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.adapter.TaskAdapter;
+import com.andrewxa.todolist.contract.ToDoView;
 import com.andrewxa.todolist.data.model.Task;
 import com.andrewxa.todolist.presenter.Presenter;
 import com.andrewxa.todolist.utils.myOnClickListener;
+import com.arellomobile.mvp.MvpAppCompatActivity;
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
+
+import io.reactivex.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +35,15 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class MainActivity extends AppCompatActivity implements Contract.view {
+public class MainActivity extends MvpAppCompatActivity implements ToDoView {
+
+    @InjectPresenter
+    Presenter presenter;
 
     private RecyclerView recyclerView;
     public TaskAdapter adapter;
     private EditText itemET;
     private Button btn;
-    private Presenter presenter;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
@@ -48,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
         itemET = findViewById(R.id.item_edit_text);
         btn = findViewById(R.id.add_btn);
 
-        presenter = new Presenter(this,this);
+        presenter = new Presenter(this, this);
         adapter = new TaskAdapter(new ArrayList<Task>());
 
         loadData();
@@ -60,27 +67,19 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
 
             @Override
             public void onClick(View view) {
-                Disposable disposable = io.reactivex.Observable.create(new ObservableOnSubscribe<Object>() {
-                    @Override
-                    public void subscribe(ObservableEmitter<Object> e) {
-                        presenter.addTask(itemET.getText().toString());
-                        e.onComplete();
-                    }
-                })
+                compositeDisposable.add(Observable.create(subscribe -> {
+                    presenter.addTask(itemET.getText().toString());
+                    subscribe.onComplete();
+                        }
+                ).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
-                        .subscribe(new Consumer() {
-                            @Override
-                            public void accept(Object o) {
-                                Toast.makeText(MainActivity.this,"Task successfully added",Toast.LENGTH_SHORT).show();
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-                                Toast.makeText(MainActivity.this,""+throwable.getMessage(),Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                compositeDisposable.add(disposable);
+                        .subscribe(accept -> {
+                            Toast.makeText(MainActivity.this, "Task successfully added", Toast.LENGTH_SHORT).show();
+                        }, throwable ->
+                        {
+                            Toast.makeText(MainActivity.this, "Task successfully added", Toast.LENGTH_SHORT).show();
+                        }));
                 itemET.setText("");
             }
         });
@@ -88,97 +87,63 @@ public class MainActivity extends AppCompatActivity implements Contract.view {
         adapter.setMyOnClickListener(new myOnClickListener() {
             @Override
             public void onConfirmClick(final long id, final String newTask) {
-                Disposable disposable = io.reactivex.Observable.create(new ObservableOnSubscribe<Object>() {
-                    @Override
-                    public void subscribe(ObservableEmitter<Object> e) {
-                        presenter.editTask(newTask,id);
-                        e.onComplete();
-                    }
+
+                compositeDisposable.add(Observable.create(subscribe -> {
+                    presenter.editTask(newTask, id);
+                    subscribe.onComplete();
                 })
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
-                        .subscribe(new Consumer() {
-                            @Override
-                            public void accept(Object o) {
-                                Toast.makeText(MainActivity.this,"Task successfully edited",Toast.LENGTH_SHORT).show();
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-                                Toast.makeText(MainActivity.this,""+throwable.getMessage(),Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                compositeDisposable.add(disposable);
+                        .subscribe(accept -> {
+
+                            Toast.makeText(MainActivity.this, "Task successfully edited", Toast.LENGTH_SHORT).show();
+                        }, throwable -> {
+                            Toast.makeText(MainActivity.this, "" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        }));
             }
 
             @Override
             public void onRemoveClick(final long id) {
-                Disposable disposable = io.reactivex.Observable.create(new ObservableOnSubscribe<Object>() {
-                    @Override
-                    public void subscribe(ObservableEmitter<Object> e) {
-                        presenter.deleteTask(id);
-                        e.onComplete();
-                    }
-                })      .observeOn(AndroidSchedulers.mainThread())
+                compositeDisposable.add(Observable.create(subscribe -> {
+                    presenter.deleteTask(id);
+                    subscribe.onComplete();
+                }).observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
-                        .subscribe(new Consumer() {
-                            @Override
-                            public void accept(Object o) {
-                                Toast.makeText(MainActivity.this,"Task successfully deleted",Toast.LENGTH_SHORT).show();
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-                                Toast.makeText(MainActivity.this,""+throwable.getMessage(),Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                compositeDisposable.add(disposable);
-                }
+                        .subscribe(accept -> {
+                            Toast.makeText(MainActivity.this, "Task successfully deleted", Toast.LENGTH_SHORT).show();
+                        }, throwable -> {
+                            Toast.makeText(MainActivity.this, "" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        }));
+            }
         });
-
     }
 
     private void loadData() {
-        Disposable disposable = presenter.getAllTask()
+        compositeDisposable.add(presenter.getAllTask()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<List<Task>>() {
-                    @Override
-                    public void accept(List<Task> tasks) throws Exception {
-                        adapter.update(tasks);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Toast.makeText(MainActivity.this,""+throwable.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                });
-        compositeDisposable.add(disposable);
+                .subscribe(tasks -> {
+                    adapter.update(tasks);
+                }, throwable -> {
+                    Toast.makeText(MainActivity.this, "" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                }));
     }
 
     @Override
     public void updateData(Flowable<List<Task>> tasks) {
-        Disposable disposable = presenter.getAllTask()
+        compositeDisposable.add(presenter.getAllTask()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<List<Task>>() {
-                    @Override
-                    public void accept(List<Task> tasks) throws Exception {
-                        adapter.update(tasks);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Toast.makeText(MainActivity.this,""+throwable.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                });
-        compositeDisposable.add(disposable);
-
+                .subscribe(taskz -> {
+                    adapter.update(taskz);
+                }, throwable -> {
+                    Toast.makeText(MainActivity.this, "" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                }));
     }
 
     @Override
     public void message(String msg) {
-        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
 }
