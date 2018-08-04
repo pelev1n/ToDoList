@@ -2,7 +2,6 @@ package com.andrewxa.todolist.presenter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import com.andrewxa.todolist.contract.Contract;
 import com.andrewxa.todolist.contract.ToDoView;
@@ -20,15 +19,12 @@ import io.reactivex.Flowable;
 @InjectViewState
 public class Presenter extends MvpPresenter<ToDoView> implements Contract.Presenter {
 
-    @NonNull
-    ToDoView view;
     TaskDatabase taskDatabase;
     TaskRepository taskRepository;
 
     public Presenter() {}
 
-    public Presenter(ToDoView view,Context context) {
-        this.view = view;
+    public Presenter(Context context) {
         taskDatabase = TaskDatabase.getInstance(context);   // Create database
         taskRepository = TaskRepository.getInstance(TaskDataSource.getInstance(taskDatabase.taskDAO()));
 
@@ -41,20 +37,20 @@ public class Presenter extends MvpPresenter<ToDoView> implements Contract.Presen
         }
         Task task = new Task(taskName);
         taskRepository.inserTask(task);
-        view.updateData(getAllTask());
+        getViewState().updateData(getAllTask());
     }
 
     @Override
     public void editTask(String newTaskName, long id) {
         if(!onCheckTaskClicked(newTaskName)) return;
         taskRepository.updateTaskById(newTaskName,id);
-        view.updateData(getAllTask());
+        getViewState().updateData(getAllTask());
     }
 
     @Override
     public void deleteTask(long id) {
         taskRepository.deleteTaskById(id);
-        view.updateData(getAllTask());
+        getViewState().updateData(getAllTask());
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -65,7 +61,7 @@ public class Presenter extends MvpPresenter<ToDoView> implements Contract.Presen
 
 
     public void incorectTask() {
-        view.message("Please enter task");
+        getViewState().message("Please enter task");
     }
 
     public boolean onCheckTaskClicked(String task) {

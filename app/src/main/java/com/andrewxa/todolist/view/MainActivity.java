@@ -18,7 +18,6 @@ import com.andrewxa.todolist.presenter.Presenter;
 import com.andrewxa.todolist.utils.myOnClickListener;
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import io.reactivex.Observable;
 
@@ -26,12 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -55,7 +50,7 @@ public class MainActivity extends MvpAppCompatActivity implements ToDoView {
         itemET = findViewById(R.id.item_edit_text);
         btn = findViewById(R.id.add_btn);
 
-        presenter = new Presenter(this, this);
+        presenter = new Presenter(this);
         adapter = new TaskAdapter(new ArrayList<Task>());
 
         loadData();
