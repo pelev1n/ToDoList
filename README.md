@@ -1,3 +1,3 @@
 # ToDoList
 
-A simple To-Do List Apps 
+A simple To-Do List App
